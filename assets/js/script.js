@@ -4,6 +4,7 @@ let tasksToDoEl = document.querySelector("#tasks-to-do");
 let tasksInProgressEl = document.querySelector("#tasks-in-progress");
 let tasksCompletedEl = document.querySelector("#tasks-completed");
 let pageContentEl = document.querySelector("#page-content");
+let tasks = [];
 
 let taskFormHandler = function(event) {
   event.preventDefault();
@@ -31,7 +32,8 @@ let taskFormHandler = function(event) {
   else {
     let taskDataObj = {
       name: taskNameInput,
-      type: taskTypeInput
+      type: taskTypeInput,
+      status: "to do"
     };
 
     createTaskEl(taskDataObj);
@@ -56,6 +58,10 @@ let createTaskEl = function(taskDataObj) {
   let taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
   tasksToDoEl.appendChild(listItemEl);
+
+  taskDataObj.id = taskIdCounter;
+
+  tasks.push(taskDataObj);
 
   // increase task counter for next unique id 
   taskIdCounter++;
@@ -111,6 +117,13 @@ let completeEditTask = function(taskName, taskType, taskId) {
   taskSelected.querySelector("h3.task-name").textContent = taskName;
   taskSelected.querySelector("span.task-type").textContent = taskType;
 
+  for (let i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].name = taskName;
+      tasks[i].type = taskType;
+    }
+  };
+
   alert("Task Updated!");
 
   formEl.removeAttribute("data-task-id");
@@ -139,10 +152,10 @@ let taskStatusChangeHandler = function(event) {
   let taskId = event.target.getAttribute("data-task-id");
 
   // find the parent task item element based on the id 
-  var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+  let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
 
   // get the currently selected option's value and convert to lowercase 
-  var statusValue = event.target.value.toLowerCase();
+  let statusValue = event.target.value.toLowerCase();
 
   if (statusValue === "to do") {
     tasksToDoEl.appendChild(taskSelected);
@@ -152,6 +165,12 @@ let taskStatusChangeHandler = function(event) {
   }
   else if (statusValue === "completed") {
     tasksCompletedEl.appendChild(taskSelected);
+  };
+
+  for (let i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].status = statusValue;
+    }
   };
 };
 
@@ -179,6 +198,20 @@ let deleteTask = function(taskId) {
   console.log(taskId);
   let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
   taskSelected.remove();
+
+  // create new array to hold updated list of tasks 
+  let updatedTaskArr = [];
+
+  // loop through current tasks 
+  for (let i = 0; i < tasks.length; i++) {
+    // if tasks[i].id doesn't match the value of taskId, keep that task 
+    if (tasks[i].id !== parseInt(taskId)) {
+      updatedTaskArr.push(tasks[i]);
+    }
+  };   
+
+  // reassign tasks array to be the same as updatedTaskArr 
+  tasks = updatedTaskArr;
 };
 
 formEl.addEventListener("submit", taskFormHandler);
