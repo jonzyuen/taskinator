@@ -1,10 +1,11 @@
 let taskIdCounter = 0;
+let tasks = [];
+
 let formEl = document.querySelector("#task-form");
 let tasksToDoEl = document.querySelector("#tasks-to-do");
 let tasksInProgressEl = document.querySelector("#tasks-in-progress");
 let tasksCompletedEl = document.querySelector("#tasks-completed");
 let pageContentEl = document.querySelector("#page-content");
-let tasks = [];
 
 let taskFormHandler = function(event) {
   event.preventDefault();
@@ -58,7 +59,6 @@ let createTaskEl = function(taskDataObj) {
 
   let taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
-  // tasksToDoEl.appendChild(listItemEl);
 
   switch (taskDataObj.status) {
     case "to do":
@@ -131,7 +131,9 @@ let createTaskActions = function(taskId) {
 
 let completeEditTask = function(taskName, taskType, taskId) {
   // find the matching task list item 
-  let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+  let taskSelected = document.querySelector(
+    ".task-item[data-task-id='" + taskId + "']"
+  );
 
   // set new values 
   taskSelected.querySelector("h3.task-name").textContent = taskName;
